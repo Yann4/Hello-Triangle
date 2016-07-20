@@ -1,13 +1,13 @@
 #include "Application.h"
 
-void HelloTriangleApplication::run()
+void Application::run()
 {
 	initWindow();
 	initVulkan();
 	mainLoop();
 }
 
-void HelloTriangleApplication::initWindow()
+void Application::initWindow()
 {
 	glfwInit();
 
@@ -17,12 +17,12 @@ void HelloTriangleApplication::initWindow()
 	window = glfwCreateWindow(mWidth, mHeight, title.c_str(), nullptr, nullptr);
 }
 
-void HelloTriangleApplication::initVulkan()
+void Application::initVulkan()
 {
 	createVkInstance();
 }
 
-void HelloTriangleApplication::mainLoop()
+void Application::mainLoop()
 {
 	while (!glfwWindowShouldClose(window))
 	{
@@ -30,7 +30,7 @@ void HelloTriangleApplication::mainLoop()
 	}
 }
 
-void HelloTriangleApplication::createVkInstance()
+void Application::createVkInstance()
 {
 	VkApplicationInfo appInfo = {};
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -41,16 +41,16 @@ void HelloTriangleApplication::createVkInstance()
 	appInfo.apiVersion = VK_API_VERSION_1_0;
 
 	VkInstanceCreateInfo createInfo = {};
-	createInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	createInfo.pApplicationInfo = &appInfo;
 
 	unsigned int glfwExtensionCount = 0;
 	const char** glfwExtensions;
 
 	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-	
 	createInfo.enabledExtensionCount = glfwExtensionCount;
 	createInfo.ppEnabledExtensionNames = glfwExtensions;
+	
 	createInfo.enabledLayerCount = 0;
 
 	VkResult result = vkCreateInstance(&createInfo, nullptr, &instance);

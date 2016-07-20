@@ -4,10 +4,12 @@
 #include <GLFW/glfw3.h>
 
 #include <string>
+#include <vector>
+#include <iostream>
 
 #include "Deleter.h"
 
-class HelloTriangleApplication
+class Application
 {
 public:
 	void run();
@@ -19,6 +21,7 @@ private:
 	const std::string title = "Vulkan";
 
 	VDeleter<VkInstance> instance{ vkDestroyInstance };
+
 private:
 	void initWindow();
 	void initVulkan();

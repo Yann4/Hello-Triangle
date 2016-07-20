@@ -38,7 +38,7 @@ public:
 		return &object;
 	}
 
-	operator T()
+	operator T() const
 	{
 		return object;
 	}
