@@ -21,6 +21,7 @@ void Application::initVulkan()
 {
 	createVkInstance();
 	setupDebugCallback();
+	selectPhysicalDevice();
 }
 
 void Application::mainLoop()
@@ -71,6 +72,71 @@ void Application::createVkInstance()
 	{
 		throw std::runtime_error("Failed to create instance");
 	}
+}
+
+void Application::selectPhysicalDevice()
+{
+	uint32_t physicalDeviceCount = 0;
+	
+	vkEnumeratePhysicalDevices(instance, &physicalDeviceCount, nullptr);
+	
+	if (physicalDeviceCount == 0)
+	{
+		throw std::runtime_error("Failed to find a GPU with Vulkan support");
+	}
+	
+	std::vector<VkPhysicalDevice> devices(physicalDeviceCount);
+	vkEnumeratePhysicalDevices(instance, &physicalDeviceCount, devices.data());
+
+	for (const auto& dev : devices)
+	{
+		if (isDeviceSuitable(dev))
+		{
+			physicalDevice = dev;
+			break;
+		}
+	}
+
+	if (physicalDevice == VK_NULL_HANDLE)
+	{
+		throw std::runtime_error("Failed to find a suitable GPU");
+	}
+}
+
+bool Application::isDeviceSuitable(const VkPhysicalDevice& dev)
+{
+	QueueFamilyIndices indices = findQueueFamilies(dev);
+
+	return indices.isComplete();
+}
+
+QueueFamilyIndices Application::findQueueFamilies(VkPhysicalDevice device)
+{
+	QueueFamilyIndices indices;
+
+	uint32_t queueFamilyCount = 0;
+	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
+
+	std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
+
+	int i = 0;
+	for (const auto& queueFamily : queueFamilies) 
+	{
+		if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+		{
+			indices.graphicsFamily = i;
+		}
+
+		if (indices.isComplete())
+		{
+			break;
+		}
+
+		i++;
+	}
+
+	return indices;
 }
 
 bool Application::checkValidationLayerSupport() 

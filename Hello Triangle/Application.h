@@ -9,6 +9,16 @@
 
 #include "Deleter.h"
 
+struct QueueFamilyIndices
+{
+	int graphicsFamily = -1;
+
+	bool isComplete()
+	{
+		return graphicsFamily >= 0;
+	}
+};
+
 class Application
 {
 public:
@@ -21,6 +31,7 @@ private:
 	const std::string title = "Vulkan";
 
 	VDeleter<VkInstance> instance{ vkDestroyInstance };
+	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 
 	//Validation Layer variables
 	VDeleter<VkDebugReportCallbackEXT> callback{ instance, Application::DestroyDebugReportCallbackEXT };
@@ -43,6 +54,10 @@ private:
 	//Functions to initialise Vulkan
 	void createVkInstance();
 
+	void selectPhysicalDevice();
+	bool isDeviceSuitable(const VkPhysicalDevice& dev);
+
+	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 	//Validation layer functions
 	bool checkValidationLayerSupport();
 	std::vector<const char*> getRequiredExtensions();
