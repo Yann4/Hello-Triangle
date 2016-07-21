@@ -23,7 +23,7 @@ private:
 	VDeleter<VkInstance> instance{ vkDestroyInstance };
 
 	//Validation Layer variables
-	VkDebugReportCallbackEXT callback;
+	VDeleter<VkDebugReportCallbackEXT> callback{ instance, Application::DestroyDebugReportCallbackEXT };
 
 	const std::vector<const char*> validationLayers = {
 		"VK_LAYER_LUNARG_standard_validation"
@@ -53,4 +53,6 @@ private:
 
 	VkResult CreateDebugReportCallbackEXT(VkInstance instance, const VkDebugReportCallbackCreateInfoEXT* pCreateInfo, 
 		const VkAllocationCallbacks* pAllocator, VkDebugReportCallbackEXT* pCallback);
+
+	static void DestroyDebugReportCallbackEXT(VkInstance instance, VkDebugReportCallbackEXT callback, const VkAllocationCallbacks* pAllocator);
 };
