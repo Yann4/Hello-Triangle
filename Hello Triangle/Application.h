@@ -31,7 +31,11 @@ private:
 	const std::string title = "Vulkan";
 
 	VDeleter<VkInstance> instance{ vkDestroyInstance };
+	
+	VDeleter<VkDevice> device{ vkDestroyDevice };
 	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+	
+	VkQueue graphicsQueue;
 
 	//Validation Layer variables
 	VDeleter<VkDebugReportCallbackEXT> callback{ instance, Application::DestroyDebugReportCallbackEXT };
@@ -54,6 +58,8 @@ private:
 	//Functions to initialise Vulkan
 	void createVkInstance();
 
+	//Device creation
+	void createLogicalDevice();
 	void selectPhysicalDevice();
 	bool isDeviceSuitable(const VkPhysicalDevice& dev);
 
