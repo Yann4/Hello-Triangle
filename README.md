@@ -1,4 +1,4 @@
-# Hello-Triangle
+# VulkanEngine
 
 Working on a vulkan based graphics engine. Currently just working through [this tutorial ](https://vulkan-tutorial.com/).
 
