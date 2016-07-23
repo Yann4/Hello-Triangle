@@ -5,6 +5,7 @@
 
 #include <string>
 #include <vector>
+#include <set>
 #include <iostream>
 
 #include "Deleter.h"
@@ -12,10 +13,11 @@
 struct QueueFamilyIndices
 {
 	int graphicsFamily = -1;
+	int presentFamily = -1;
 
 	bool isComplete()
 	{
-		return graphicsFamily >= 0;
+		return graphicsFamily >= 0 && presentFamily >= 0;
 	}
 };
 
@@ -36,6 +38,9 @@ private:
 	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 	
 	VkQueue graphicsQueue;
+	VkQueue presentQueue;
+	
+	VDeleter<VkSurfaceKHR> surface{ instance, vkDestroySurfaceKHR };
 
 	//Validation Layer variables
 	VDeleter<VkDebugReportCallbackEXT> callback{ instance, Application::DestroyDebugReportCallbackEXT };
@@ -64,6 +69,9 @@ private:
 	bool isDeviceSuitable(const VkPhysicalDevice& dev);
 
 	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+
+	void createSurface();
+
 	//Validation layer functions
 	bool checkValidationLayerSupport();
 	std::vector<const char*> getRequiredExtensions();
