@@ -50,6 +50,9 @@ private:
 	
 	VDeleter<VkDevice> device{ vkDestroyDevice };
 	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+
+	VDeleter<VkCommandPool> commandPool{ device, vkDestroyCommandPool };
+	std::vector<VkCommandBuffer> commandBuffers;
 	
 	VkQueue graphicsQueue;
 	VkQueue presentQueue;
@@ -127,6 +130,10 @@ private:
 	//Shader loaders
 	static std::vector<char> readFile(const std::string& fileName);
 	void createShaderModule(const std::vector<char>& code, VDeleter<VkShaderModule>& shaderModule);
+
+	//Command pool
+	void createCommandPool();
+	void createCommandBuffers();
 
 	//Validation layer functions
 	bool checkValidationLayerSupport();
