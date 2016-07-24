@@ -60,6 +60,8 @@ private:
 	VkFormat swapChainImageFormat;
 	VkExtent2D swapChainExtent;
 
+	std::vector<VDeleter<VkImage>> swapChainImageViews;
+
 	const std::vector<const char*> deviceExtensions = {
 		VK_KHR_SWAPCHAIN_EXTENSION_NAME,
 	};
@@ -103,6 +105,8 @@ private:
 	VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
 	VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities); //Chooses the resolution of the swap chain images
 
+	//Image views
+	void createImageViews();
 	//Validation layer functions
 	bool checkValidationLayerSupport();
 	std::vector<const char*> getRequiredExtensions();
