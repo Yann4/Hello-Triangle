@@ -21,7 +21,7 @@ public:
 		this->deleter = [&instance, deletef](T obj) { deletef(instance, obj, nullptr); };
 	}
 
-	VDeleter(const VDeleter<VkDevice>& device, std::function<void(VkInstance, T, VkAllocationCallbacks*)> deletef)
+	VDeleter(const VDeleter<VkDevice>& device, std::function<void(VkDevice, T, VkAllocationCallbacks*)> deletef)
 	{
 		object = VK_NULL_HANDLE;
 		this->deleter = [&device, deletef](T obj) { deletef(device, obj, nullptr); };

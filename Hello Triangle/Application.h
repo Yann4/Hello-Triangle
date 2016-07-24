@@ -7,6 +7,7 @@
 #include <vector>
 #include <set>
 #include <iostream>
+#include <algorithm>
 
 #include "Deleter.h"
 
@@ -18,6 +19,18 @@ struct QueueFamilyIndices
 	bool isComplete()
 	{
 		return graphicsFamily >= 0 && presentFamily >= 0;
+	}
+};
+
+struct SwapChainSupportDetails
+{
+	VkSurfaceCapabilitiesKHR capabilities;
+	std::vector<VkSurfaceFormatKHR> formats;
+	std::vector<VkPresentModeKHR> presentModes;
+
+	bool isAdequate()
+	{
+		return !formats.empty() && !presentModes.empty();
 	}
 };
 
@@ -41,12 +54,20 @@ private:
 	VkQueue presentQueue;
 	
 	VDeleter<VkSurfaceKHR> surface{ instance, vkDestroySurfaceKHR };
+	
+	VDeleter<VkSwapchainKHR> swapChain{ device, vkDestroySwapchainKHR };
+	std::vector<VkImage> swapChainImages;
+	VkFormat swapChainImageFormat;
+	VkExtent2D swapChainExtent;
 
+	const std::vector<const char*> deviceExtensions = {
+		VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+	};
 	//Validation Layer variables
 	VDeleter<VkDebugReportCallbackEXT> callback{ instance, Application::DestroyDebugReportCallbackEXT };
 
 	const std::vector<const char*> validationLayers = {
-		"VK_LAYER_LUNARG_standard_validation"
+		"VK_LAYER_LUNARG_standard_validation",
 	};
 
 #ifdef NDEBUG
@@ -63,14 +84,24 @@ private:
 	//Functions to initialise Vulkan
 	void createVkInstance();
 
-	//Device creation
+	//Physical/Locgical Device creation & selection
 	void createLogicalDevice();
 	void selectPhysicalDevice();
+	
 	bool isDeviceSuitable(const VkPhysicalDevice& dev);
+	bool checkDeviceExtensionSupport(VkPhysicalDevice dev);
 
+	//Surface creation (oddly enough)
+	void createSurface();
+	
 	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 
-	void createSurface();
+	//Swap chain selection
+	void createSwapChain();
+	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice dev);
+	VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
+	VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
+	VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities); //Chooses the resolution of the swap chain images
 
 	//Validation layer functions
 	bool checkValidationLayerSupport();
