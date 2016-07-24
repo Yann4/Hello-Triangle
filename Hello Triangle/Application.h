@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 
 #include <string>
+#include <fstream>
 #include <vector>
 #include <set>
 #include <iostream>
@@ -55,6 +56,10 @@ private:
 	
 	VDeleter<VkSurfaceKHR> surface{ instance, vkDestroySurfaceKHR };
 	
+	VDeleter<VkPipelineLayout> pipelineLayout{ device, vkDestroyPipelineLayout };
+	VDeleter<VkPipeline> graphicsPipeline{ device, vkDestroyPipeline };
+	VDeleter<VkRenderPass> renderPass{ device, vkDestroyRenderPass };
+
 	VDeleter<VkSwapchainKHR> swapChain{ device, vkDestroySwapchainKHR };
 	std::vector<VkImage> swapChainImages;
 	VkFormat swapChainImageFormat;
@@ -62,9 +67,13 @@ private:
 
 	std::vector<VDeleter<VkImage>> swapChainImageViews;
 
+	VDeleter<VkShaderModule> vertShaderModule = { device, vkDestroyShaderModule };
+	VDeleter<VkShaderModule> fragShaderModule = { device, vkDestroyShaderModule };
+
 	const std::vector<const char*> deviceExtensions = {
 		VK_KHR_SWAPCHAIN_EXTENSION_NAME,
 	};
+
 	//Validation Layer variables
 	VDeleter<VkDebugReportCallbackEXT> callback{ instance, Application::DestroyDebugReportCallbackEXT };
 
@@ -107,6 +116,15 @@ private:
 
 	//Image views
 	void createImageViews();
+
+	//Graphics pipeline
+	void createGraphicsPipeline();
+	void createRenderPass();
+
+	//Shader loaders
+	static std::vector<char> readFile(const std::string& fileName);
+	void createShaderModule(const std::vector<char>& code, VDeleter<VkShaderModule>& shaderModule);
+
 	//Validation layer functions
 	bool checkValidationLayerSupport();
 	std::vector<const char*> getRequiredExtensions();
