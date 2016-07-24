@@ -62,6 +62,7 @@ private:
 
 	VDeleter<VkSwapchainKHR> swapChain{ device, vkDestroySwapchainKHR };
 	std::vector<VkImage> swapChainImages;
+	std::vector<VDeleter<VkFramebuffer>> swapChainFrameBuffers;
 	VkFormat swapChainImageFormat;
 	VkExtent2D swapChainExtent;
 
@@ -120,6 +121,8 @@ private:
 	//Graphics pipeline
 	void createGraphicsPipeline();
 	void createRenderPass();
+
+	void createFrameBuffers();
 
 	//Shader loaders
 	static std::vector<char> readFile(const std::string& fileName);
