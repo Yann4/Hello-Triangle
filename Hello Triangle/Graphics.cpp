@@ -6,6 +6,11 @@ Graphics::Graphics()
 	initVulkan();
 }
 
+Graphics::Graphics(int width, int height, std::string title) : width(width), height(height), title(title)
+{
+	Graphics();
+}
+
 Graphics::~Graphics()
 {
 	vkDeviceWaitIdle(device);
@@ -16,7 +21,7 @@ void Graphics::Draw()
 	drawFrame();
 }
 
-bool Graphics::shouldExit()
+bool Graphics::windowClosed()
 {
 	return glfwWindowShouldClose(window) == 0 ? false : true;
 }

@@ -14,6 +14,15 @@
 
 class Graphics
 {
+
+public:
+	Graphics();
+	Graphics(int width, int height, std::string title);
+	~Graphics();
+
+	void Draw();
+	bool windowClosed();
+
 private:
 	struct QueueFamilyIndices
 	{
@@ -40,9 +49,9 @@ private:
 
 private:
 	GLFWwindow* window;
-	const int width = 600;
-	const int height = 800;
-	const std::string title = "Vulkan";
+	int width = 600;
+	int height = 800;
+	std::string title = "Vulkan";
 
 	VDeleter<VkInstance> instance{ vkDestroyInstance };
 
@@ -91,18 +100,15 @@ private:
 #else
 	const bool enableValidationLayers = true;
 #endif
-public:
-	Graphics();
-	~Graphics();
-
-	void Draw();
-	bool shouldExit();
 
 private:
+	//High level creation functions
 	void initWindow();
 	void initVulkan();
 
 	void drawFrame();
+	
+	//Callback function
 	static void onWindowResized(GLFWwindow* window, int width, int height);
 
 	//Functions to initialise Vulkan
@@ -110,12 +116,13 @@ private:
 
 	//Physical/Locgical Device creation & selection
 	void createLogicalDevice();
+	//TODO: Rate devices and select based upon that
 	void selectPhysicalDevice();
 
+	//Selection function
 	bool isDeviceSuitable(const VkPhysicalDevice& dev);
 	bool checkDeviceExtensionSupport(VkPhysicalDevice dev);
 
-	//Surface creation (oddly enough)
 	void createSurface();
 
 	void createSemaphores();
@@ -147,16 +154,13 @@ private:
 	void createCommandPool();
 	void createCommandBuffers();
 
-	//Validation layer functions
+	//Validation layer
 	bool checkValidationLayerSupport();
 	std::vector<const char*> getRequiredExtensions();
-	static VkBool32 debugCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objType, uint64_t obj,
-		size_t location, int32_t code, const char* layerPrefix, const char* msg, void* userData);
-
+	
+	//Validation layer callbacks
 	void setupDebugCallback();
-
-	VkResult CreateDebugReportCallbackEXT(VkInstance instance, const VkDebugReportCallbackCreateInfoEXT* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator, VkDebugReportCallbackEXT* pCallback);
-
+	VkResult CreateDebugReportCallbackEXT(VkInstance instance, const VkDebugReportCallbackCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugReportCallbackEXT* pCallback);
+	static VkBool32 debugCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objType, uint64_t obj, size_t location, int32_t code, const char* layerPrefix, const char* msg, void* userData);
 	static void DestroyDebugReportCallbackEXT(VkInstance instance, VkDebugReportCallbackEXT callback, const VkAllocationCallbacks* pAllocator);
 };

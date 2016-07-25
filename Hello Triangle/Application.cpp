@@ -7,7 +7,7 @@ void Application::run()
 
 void Application::mainLoop()
 {
-	while (!graphics.shouldExit())
+	while (!graphics.windowClosed())
 	{
 		glfwPollEvents();
 		graphics.Draw();
