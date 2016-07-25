@@ -42,8 +42,8 @@ public:
 
 private:
 	GLFWwindow* window;
-	const int mWidth = 600;
-	const int mHeight = 800;
+	const int width = 600;
+	const int height = 800;
 	const std::string title = "Vulkan";
 
 	VDeleter<VkInstance> instance{ vkDestroyInstance };
@@ -100,6 +100,7 @@ private:
 	void mainLoop();
 
 	void drawFrame();
+	static void onWindowResized(GLFWwindow* window, int width, int height);
 
 	//Functions to initialise Vulkan
 	void createVkInstance();
@@ -119,6 +120,7 @@ private:
 	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 
 	//Swap chain selection
+	void recreateSwapchain();
 	void createSwapChain();
 	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice dev);
 	VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);

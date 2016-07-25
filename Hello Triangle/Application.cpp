@@ -23,9 +23,11 @@ void Application::initWindow()
 	glfwInit();
 
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-	window = glfwCreateWindow(mWidth, mHeight, title.c_str(), nullptr, nullptr);
+	window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
+
+	glfwSetWindowUserPointer(window, this);
+	glfwSetWindowSizeCallback(window, Application::onWindowResized);
 }
 
 void Application::initVulkan()
@@ -48,7 +50,17 @@ void Application::initVulkan()
 void Application::drawFrame()
 {
 	uint32_t imageIndex;
-	vkAcquireNextImageKHR(device, swapChain, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+	VkResult result = vkAcquireNextImageKHR(device, swapChain, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+
+	if (result == VK_ERROR_OUT_OF_DATE_KHR)
+	{
+		recreateSwapchain();
+		return;
+	}
+	else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+	{
+		throw std::runtime_error("Failed to acquire swap chain image");
+	}
 
 	VkSubmitInfo submitInfo = {};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -135,6 +147,13 @@ void Application::createSurface()
 	}
 }
 
+void Application::onWindowResized(GLFWwindow* window, int width, int height)
+{
+	Application* app = reinterpret_cast<Application*>(glfwGetWindowUserPointer(window));
+	app->recreateSwapchain();
+}
+
+
 void Application::createLogicalDevice()
 {
 	QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
@@ -183,6 +202,18 @@ void Application::createLogicalDevice()
 	vkGetDeviceQueue(device, indices.presentFamily, 0, &presentQueue);
 }
 
+void Application::recreateSwapchain()
+{
+	vkDeviceWaitIdle(device);
+
+	createSwapChain();
+	createImageViews();
+	createRenderPass();
+	createGraphicsPipeline();
+	createFrameBuffers();
+	createCommandBuffers();
+}
+
 void Application::createSwapChain()
 {
 	SwapChainSupportDetails swapChainSupport = querySwapChainSupport(physicalDevice);
@@ -228,10 +259,17 @@ void Application::createSwapChain()
 	createInfo.clipped = VK_TRUE;
 	createInfo.oldSwapchain = VK_NULL_HANDLE;
 
-	if (vkCreateSwapchainKHR(device, &createInfo, nullptr, &swapChain) != VK_SUCCESS)
+	VkSwapchainKHR oldSwapChain = swapChain;
+	createInfo.oldSwapchain = oldSwapChain;
+	
+	VkSwapchainKHR newSwapChain;
+
+	if (vkCreateSwapchainKHR(device, &createInfo, nullptr, &newSwapChain) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to create swap chain");
 	}
+
+	*&swapChain = newSwapChain;
 
 	vkGetSwapchainImagesKHR(device, swapChain, &imageCount, nullptr);
 	swapChainImages.resize(imageCount);
@@ -507,6 +545,11 @@ void Application::createCommandPool()
 
 void Application::createCommandBuffers()
 {
+	if (commandBuffers.size() > 0)
+	{
+		vkFreeCommandBuffers(device, commandPool, commandBuffers.size(), commandBuffers.data());
+	}
+
 	commandBuffers.resize(swapChainFrameBuffers.size());
 
 	VkCommandBufferAllocateInfo allocInfo = {};
@@ -751,7 +794,7 @@ VkExtent2D Application::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabil
 		return capabilities.currentExtent;
 	}
 
-	VkExtent2D actualExtent{ mWidth, mHeight };
+	VkExtent2D actualExtent{ width, height };
 
 	actualExtent.width = std::max(capabilities.minImageExtent.width, std::min(capabilities.maxImageExtent.width, actualExtent.width));
 	actualExtent.height = std::max(capabilities.minImageExtent.height, std::min(capabilities.maxImageExtent.height, actualExtent.height));
