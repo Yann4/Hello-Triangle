@@ -6,11 +6,6 @@ Graphics::Graphics()
 	initVulkan();
 }
 
-Graphics::Graphics(int width, int height, std::string title) : width(width), height(height), title(title)
-{
-	Graphics();
-}
-
 Graphics::~Graphics()
 {
 	vkDeviceWaitIdle(device);

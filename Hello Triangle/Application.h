@@ -11,7 +11,7 @@ public:
 	void run();
 
 private:
-	
+	bool shouldQuit();
 	void mainLoop();
 
 private:

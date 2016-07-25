@@ -17,7 +17,6 @@ class Graphics
 
 public:
 	Graphics();
-	Graphics(int width, int height, std::string title);
 	~Graphics();
 
 	void Draw();
@@ -49,9 +48,9 @@ private:
 
 private:
 	GLFWwindow* window;
-	int width = 600;
-	int height = 800;
-	std::string title = "Vulkan";
+	const int width = 800;
+	const int height = 800;
+	const std::string title = "Vulkan";
 
 	VDeleter<VkInstance> instance{ vkDestroyInstance };
 
