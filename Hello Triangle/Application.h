@@ -54,6 +54,9 @@ private:
 	VDeleter<VkCommandPool> commandPool{ device, vkDestroyCommandPool };
 	std::vector<VkCommandBuffer> commandBuffers;
 	
+	VDeleter<VkSemaphore> imageAvailableSemaphore{ device, vkDestroySemaphore };
+	VDeleter<VkSemaphore> renderFinishedSemaphore{ device, vkDestroySemaphore };
+
 	VkQueue graphicsQueue;
 	VkQueue presentQueue;
 	
@@ -96,6 +99,8 @@ private:
 	void initVulkan();
 	void mainLoop();
 
+	void drawFrame();
+
 	//Functions to initialise Vulkan
 	void createVkInstance();
 
@@ -109,6 +114,8 @@ private:
 	//Surface creation (oddly enough)
 	void createSurface();
 	
+	void createSemaphores();
+
 	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 
 	//Swap chain selection
