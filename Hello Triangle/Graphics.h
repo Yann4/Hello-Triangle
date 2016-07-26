@@ -135,11 +135,18 @@ private:
 
 	VDeleter<VkBuffer> vertexBuffer = { device, vkDestroyBuffer };
 	VDeleter<VkDeviceMemory> vertexBufferMemory{ device, vkFreeMemory };
+	VDeleter<VkBuffer> indexBuffer = { device, vkDestroyBuffer };
+	VDeleter<VkDeviceMemory> indexBufferMemory{ device, vkFreeMemory };
 
 	std::vector<Vertex> vertices = {
-		{ { 0.0f, -0.5f },{ 1.0f, 0.0f, 0.0f } },
-		{ { 0.5f, 0.5f },{ 0.0f, 1.0f, 0.0f } },
-		{ { -0.5f, 0.5f },{ 0.0f, 0.0f, 1.0f } }
+		{ { -0.5f, -0.5f },{ 1.0f, 0.0f, 0.0f } },
+		{ { 0.5f, -0.5f },{ 0.0f, 1.0f, 0.0f } },
+		{ { 0.5f, 0.5f },{ 0.0f, 0.0f, 1.0f } },
+		{ { -0.5f, 0.5f },{ 1.0f, 1.0f, 1.0f } }
+	};
+
+	std::vector<uint16_t> indices = {
+		0, 1, 2, 2, 3, 0,
 	};
 
 private:
@@ -189,7 +196,8 @@ private:
 
 	void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VDeleter<VkBuffer>& buffer, VDeleter<VkDeviceMemory>& bufferMemory);
 	void copyBuffer(VkBuffer srcBuffer, VkBuffer destBuffer, VkDeviceSize size);
-	void createVertexBuffers();
+	void createVertexBuffer();
+	void createIndexBuffer();
 	uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
 	//Shader loaders
